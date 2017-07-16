@@ -4,7 +4,7 @@
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
-object sparkWordCount{
+object Application{
   def main(args: Array[String]): Unit = {
 
     val conf = new SparkConf()
@@ -13,17 +13,13 @@ object sparkWordCount{
 
     val sc = new SparkContext(conf)
 
-    val input = args.length match {
-      case x: Int if x > 0 => sc.textFile(args(0))
-    }
+    val input = sc.textFile(args(0))
 
-    val output = args.length match {
-      case x: Int if x > 1 => args(1)
-    }
+    val output = args(1)
 
     val words = input.flatMap(line => line.split(" "))
 
-    val counts = words.map(word => (word,1)).reduceByKey{case (x, y) => x + y}
+    val counts = words.map(word => (word.toLowerCase.replace(".",""),1)).reduceByKey{case (x, y) => x + y}
 
     counts.saveAsTextFile(output)
 
